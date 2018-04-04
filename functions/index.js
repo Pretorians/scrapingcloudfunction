@@ -16,10 +16,20 @@ const appFirebase = firebase.initializeApp({
 
  exports.scrapingfifa = functions.https.onRequest((req, res) => {
 
-    var url = 'http://www.fifa.com/worldcup/matches/index.html';
+    var url = 'http://es.fifa.com/worldcup/matches/index.html';
     var json = { partidos: []};
     var respuesta = "Exito";
- 
+
+    /*
+    var options = {
+        url: 'http://es.fifa.com/worldcup/matches/index.html',
+        headers: {
+          'User-Agent': 'request',  
+          'Accept-Language': 'es-ES',
+          'Content-Language': 'es-ES'
+        }
+      };    
+    */
     request(url, function(error, response, html) {
         if(!error) {
             var $ = cheerio.load(html);
@@ -62,9 +72,15 @@ const appFirebase = firebase.initializeApp({
                 };        
                 json.partidos.push(storpartido);
             })
+
+            console.log("Fin de scrapear");
             //console.log(JSON.stringify(json));
             var database = firebase.database();         
             var ref = database.ref("/").set(json);
+            console.log("Fin de guardar");
+       }
+       else{
+           console.log("Error al cargar pagina:" + url);
        }
     })   
 
