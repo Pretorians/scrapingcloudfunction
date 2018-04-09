@@ -111,6 +111,44 @@ const appFirebase = firebase.initializeApp({
     res.send(respuesta);
  });
 
+ exports.scrapingtablafifa = functions.https.onRequest((req, res) => {
+    var respuesta = "Exito";
+    var url = 'http://es.fifa.com/worldcup/groups/index.html';
+    var json = { positionTable: []};
+    var cont = 0;
+    
+    request(url, function(error, response, html) {
+        if(!error) {
+            var $ = cheerio.load(html);
+            console.log("Ingreso a scrapear");
+            var postable = {
+            };        
+    
+            $('div.group-wrap').each(function() {
+        
+                var data = $(this).children(".module").children(".inner").children(".anchor").children("table.table.tbl-standings");
+                var datos = data.children("tbody").children("tr");
+    
+                datos.each(function() {
+                    console.log($(this).text());
+                });
+                //console.log(datos);
+                postable = { 
+                };
+                //json.positionTable.push(postable);
+                cont = cont + 1;
+                
+            });
+            console.log("Fin de scrapear");       
+       }
+       else{
+           console.log("Error al cargar pagina:" + url);
+       }
+    }); 
+    res.send(respuesta);
+ });  
+ 
+
  exports.consultafifa = functions.https.onRequest((req, res) => {
     var respuesta = "Exito";
     var ref = firebase.database().ref('/');
