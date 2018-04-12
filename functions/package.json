@@ -11,6 +11,7 @@
   "dependencies": {
     "firebase-admin": "~5.10.0",
     "firebase-functions": "^0.9.0",
+    "axios"      : "latest",
     "express"    : "latest",
     "request"    : "latest",
     "cheerio"    : "latest",

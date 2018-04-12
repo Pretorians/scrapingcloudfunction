@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const firebase = require('firebase');
+var axios = require('axios');
 var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
@@ -31,9 +32,11 @@ const appFirebase = firebase.initializeApp({
       };    
     */
     console.log("Inicio carga de la pagina: " + url);
-    request(url, function(error, response, html) {
-        if(!error) {
-            var $ = cheerio.load(html);
+    //request(url, function(error, response, html) {
+    axios.get(url).then( function (response)  {    
+        if(response.toString().trim() != "") {
+            console.log(response.data.toString().trim().length);
+            var $ = cheerio.load(response.data);
             var pais1;
             var pais2;
             var datetimelocal;
@@ -70,9 +73,13 @@ const appFirebase = firebase.initializeApp({
                     if(etapa.toString().split("Grupo").length > 1){
                         grupo= etapa.toString().split("Grupo")[1].trim();
                         round= "GR";
-                    }else{
+                    } else if(idpartido.toString()==="63" || idpartido.toString()==="64"){
                         grupo="";
-                        round=etapa;    
+                        round="Final"; 
+                    }                
+                    else{
+                        grupo="";
+                        round=etapa.toString().replace("de final","").trim();    
                     }
             
                     storpartido ={
@@ -106,9 +113,14 @@ const appFirebase = firebase.initializeApp({
        else{
            console.log("Error al cargar pagina:" + url);
        }
+    //});
+        res.status(200).send("Exito");
+    })
+    .catch(function (error) {
+        console.log(error);
     });   
-
-    res.send(respuesta);
+    //console.log("fin de carga de la pagina: " + url);
+    //res.send(respuesta);
  });
 
  exports.scrapingtablafifa = functions.https.onRequest((req, res) => {
