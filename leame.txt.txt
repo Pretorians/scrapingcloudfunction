@@ -1,4 +1,4 @@
-https://us-central1-scraping-6960e.cloudfunctions.net/scrapingfifa
+https://us-central1-scraping-6960e.cloudfunctions.net/scrapingUpdateScoreFifa
 
 https://us-central1-scraping-6960e.cloudfunctions.net/consultafifa
 
