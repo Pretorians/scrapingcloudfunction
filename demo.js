@@ -15,7 +15,7 @@ const appFirebase = firebase.initializeApp({
     messagingSenderId: "381148053741"    
 });
 
- exports.scrapingfifa = functions.https.onRequest((req, res) => {
+ 
 
     var url = 'http://es.fifa.com/worldcup/matches/index.html';
     var json = { matches: []};
@@ -31,6 +31,9 @@ const appFirebase = firebase.initializeApp({
         }
       };    
     */
+
+
+
     console.log("Inicio carga de la pagina: " + url);
     //request(url, function(error, response, html) {
     axios.get(url).then( function (response)  {    
@@ -48,12 +51,35 @@ const appFirebase = firebase.initializeApp({
             var idpartido;
             var round;
 
+            var contFlujo = 0;
+
             console.log("Ingreso a scrapear");
             var storpartido = {
-            };        
-            $('div.col-xs-12.clear-grid').each(function() {
+            };    
+            
+            var database = firebase.database();
+            $('div.fi-mu.fixture').each(function() {
     
-                var data = $(this).children();
+                var PaisLocal = $(this).children(".fi-mu__m").children(".home").children(".fi-t__n").children(".fi-t__nText");
+                var PaisVisitante = $(this).children(".fi-mu__m").children(".away").children(".fi-t__n").children(".fi-t__nText");
+                var ScoreText = $(this).children(".fi-mu__m").children(".fi-s-wrap").children(".fi-s").children(".fi-s__score.fi-s__date-HHmm").children(".fi-s__scoreText");
+                
+               // console.log( contFlujo + "# " +PaisLocal.text() + " - "+ ScoreText.text().trim() +" - "+ PaisVisitante.text());
+
+                if(contFlujo <=63){
+             
+                    var ref = database.ref("matches/"+contFlujo+"/").update({ scoreTeam1: PaisLocal.text().trim(), scoreTeam2: PaisVisitante.text().trim() }); 
+                    /*
+                    firebase.database().ref()('matches/' + contFlujo)
+                    .set({ scoreTeam1: PaisLocal, scoreTeam2: PaisVisitante });
+                    */ 
+                }
+
+                contFlujo ++;
+
+
+
+                /*
                 pais1 = data.children(".mu-m").children(".t.home").children(".t-n").children(".t-nText").text();
                 pais2 = data.children(".mu-m").children(".t.away").children(".t-n").children(".t-nText").text();
                 
@@ -102,73 +128,26 @@ const appFirebase = firebase.initializeApp({
                     };
 
                     json.matches.push(storpartido);
+                    
                 }
+                */
             });
 
             console.log("Fin de scrapear ...");
-            var database = firebase.database();         
-            console.log(json.matches);
-            var ref = database.ref("matches/").set(json.matches);
+            //var database = firebase.database();         
+            //console.log(json.matches);
+            //var ref = database.ref("matches/").set(json.matches);
             console.log("Fin de guardar ...");
        }
        else{
            console.log("Error al cargar pagina:" + url);
        }
     //});
-        res.status(200).send("Exito");
+        //res.status(200).send("Exito");
     })
     .catch(function (error) {
         console.log(error);
     });   
-    //console.log("fin de carga de la pagina: " + url);
-    //res.send(respuesta);
- });
 
- exports.scrapingtablafifa = functions.https.onRequest((req, res) => {
-    var respuesta = "Exito";
-    var url = 'http://es.fifa.com/worldcup/groups/index.html';
-    var json = { positionTable: []};
-    var cont = 0;
-    
-    request(url, function(error, response, html) {
-        if(!error) {
-            var $ = cheerio.load(html);
-            console.log("Ingreso a scrapear");
-            var postable = {
-            };        
-    
-            $('div.group-wrap').each(function() {
-        
-                var data = $(this).children(".module").children(".inner").children(".anchor").children("table.table.tbl-standings");
-                var datos = data.children("tbody").children("tr");
-    
-                datos.each(function() {
-                    console.log($(this).text());
-                });
-                //console.log(datos);
-                postable = { 
-                };
-                //json.positionTable.push(postable);
-                cont = cont + 1;
-                
-            });
-            console.log("Fin de scrapear");       
-       }
-       else{
-           console.log("Error al cargar pagina:" + url);
-       }
-    }); 
-    res.send(respuesta);
- });  
- 
 
- exports.consultafifa = functions.https.onRequest((req, res) => {
-    var respuesta = "Exito";
-    var ref = firebase.database().ref('/');
-    var partidos;
 
-    ref.on("value", function(snapshot) {
-        partidos = snapshot.val();
-    });  
-    res.send(partidos);
- });    
