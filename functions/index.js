@@ -9,7 +9,7 @@ const moment = require('moment');
 const cors = require('cors')({
   origin: true,
 });
-const SENDGRID_API_KEY = "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";
+const SENDGRID_API_KEY = "";
 const SENDGRID_SENDER = "soporte@chaman.pe";
 const Sendgrid = require('sendgrid')(SENDGRID_API_KEY);
 
