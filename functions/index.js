@@ -9,10 +9,13 @@ const moment = require('moment');
 const cors = require('cors')({
   origin: true,
 });
-const SENDGRID_API_KEY = "";
-const SENDGRID_SENDER = "soporte@chaman.pe";
-const Sendgrid = require('sendgrid')(SENDGRID_API_KEY);
 
+//CABECERA DE DATOS CORREO
+/*
+const-SENDGRID_API_KEY="";
+const-SENDGRID_SENDER="soporte@chaman.pe";
+const-Sendgrid=require('sendgrid')(SENDGRID_API_KEY);
+*/
 /*
 const appFirebase = firebase.initializeApp({
     apiKey: "AIzaSyAH1o7sEzotd6rjzOABjcNEYtdDZW3UfT8",
