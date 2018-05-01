@@ -5,7 +5,15 @@ var express = require('express');
 var request = require('request');
 var cheerio = require('cheerio');
 var app     = express();
+const moment = require('moment');
+const cors = require('cors')({
+  origin: true,
+});
+const SENDGRID_API_KEY = "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";
+const SENDGRID_SENDER = "soporte@chaman.pe";
+const Sendgrid = require('sendgrid')(SENDGRID_API_KEY);
 
+/*
 const appFirebase = firebase.initializeApp({
     apiKey: "AIzaSyAH1o7sEzotd6rjzOABjcNEYtdDZW3UfT8",
     authDomain: "scraping-6960e.firebaseapp.com",
@@ -14,6 +22,17 @@ const appFirebase = firebase.initializeApp({
     storageBucket: "scraping-6960e.appspot.com",
     messagingSenderId: "381148053741"    
 });
+*/
+
+const appFirebase = firebase.initializeApp({
+    apiKey: "AIzaSyA7ltqzY9muSXkWQAXI6kHtlCLgin6DdlQ",
+    authDomain: "polla-react.firebaseapp.com",
+    databaseURL: "https://polla-react.firebaseio.com",
+    projectId: "polla-react",
+    storageBucket: "polla-react.appspot.com",
+    messagingSenderId: "991338042977"
+});
+
 
  exports.scrapingPartidosFifa = functions.https.onRequest((req, res) => {
 
@@ -220,4 +239,90 @@ const appFirebase = firebase.initializeApp({
         partidos = snapshot.val();
     });  
     res.send(partidos);
- });    
+ });
+ 
+
+ exports.envioCorreo = functions.https.onRequest((req, res) => {
+
+    return cors(req, res, () => {
+      console.log(req.body.correo);
+      console.log(req.body.nombre);
+
+      var correo = req.body.correo;
+      var nomCliente = req.body.nombre; 
+
+      const sgReq = Sendgrid.emptyRequest({
+          method: 'POST',
+          path: '/v3/mail/send',
+          body: {
+            personalizations: [{
+              to: [{ email: correo }],
+              substitutions: {
+                "-name-": nomCliente
+              }, 
+              subject: 'Que tal Mundo Chaman!',     
+            }],
+            from: { email: SENDGRID_SENDER },
+            content: [{
+              type: 'text/html',
+              value: 'Bienvenido el momento llego, Copa Mundial 2018'
+            }],
+            template_id: "13ecacfd-e9e3-474b-a519-b485549f8b3f"     
+          }
+      });
+      
+      Sendgrid.API(sgReq, (err) => {
+          if (err) {
+            next(err);
+            return;
+          }
+      });
+
+      var json = { "respuesta": "ok" };
+      res.status(200).send(json);
+    });
+
+  });
+
+  exports.enviocorreobienvenida = functions.database.ref('/users/{userId}')
+    .onCreate((event) => {
+        console.log("Preparandose para enviar el correo")
+		return admin.database().ref('/users/'+event.params.userId).once('value').then((snapshot)=>{
+    		snapshot.forEach((childSnapshot)=>{
+				var item=childSnapshot.val();
+				var nombre, correo;
+				nombre = item.profile.givenName;
+				correo = item.profile.email;
+
+                console.log(nombre);
+                console.log(correo);
+
+				const sgReq = Sendgrid.emptyRequest({
+					method: 'POST',
+					path: '/v3/mail/send',
+					body: {
+					  personalizations: [{
+						to: [{ email: correo }],
+						substitutions: {
+						  "-name-": nomCliente
+						}, 
+						subject: 'Bienvenidos a la Polla del Chaman!',     
+					  }],
+					  from: { email: SENDGRID_SENDER },
+					  content: [{
+						type: 'text/html',
+						value: 'Bienvenidos a la Polla del Chaman!'
+					  }],
+					  template_id: "13ecacfd-e9e3-474b-a519-b485549f8b3f"     
+					}
+				});
+				
+				Sendgrid.API(sgReq, (err) => {
+					if (err) {
+					  next(err);
+					  return;
+					}
+				});
+			})
+		});
+});	
