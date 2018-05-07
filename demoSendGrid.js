@@ -1,6 +1,6 @@
 'use strict';
 
-const SENDGRID_API_KEY = "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";
+const SENDGRID_API_KEY = "";
 const SENDGRID_SENDER = "soporte@chaman.pe";
 const Sendgrid = require('sendgrid')(SENDGRID_API_KEY);
 
@@ -23,7 +23,7 @@ const sgReq = Sendgrid.emptyRequest({
         type: 'text/html',
         value: 'Bienvenido el momento llego'
       }],
-      template_id: "13ecacfd-e9e3-474b-a519-b485549f8b3f"     
+      template_id: ""     
     }
 });
 
