@@ -18,7 +18,8 @@
     "request"    : "latest",
     "cheerio"    : "latest",
     "firebase": "^4.5.1",
-    "sendgrid": "latest"    
+    "sendgrid": "latest",
+    "phantom":  "latest"    
   },
   "private": true
 }

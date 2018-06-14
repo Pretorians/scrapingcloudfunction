@@ -32,7 +32,7 @@ phantom.create().then(function(ph){
         setTimeout(function(){
               console.log("Entro al timeout");
               resolve(status);
-          },10000);
+          },500);
       });
 }).then(function(status){
     console.log(status);
@@ -47,7 +47,7 @@ phantom.create().then(function(ph){
     var codPaisLocal, codPaisVisitante, grupo, round;
     console.log("Ingreso a scrapear score");  
 
-    $('div.fi-mu.fixture').each(function() {
+    $('div.fi-mu.live').each(function() {
     
         var padreDiv = $(this).parent().parent().attr("class");
 

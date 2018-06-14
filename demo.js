@@ -35,7 +35,7 @@ ref.once('value').then(snapshot=>{
 
             console.log("Ingreso a scrapear score");         
             var database = firebase.database();
-            $('div.fi-mu.fixture').each(function() {
+            $('div.fi-mu.live').each(function() {
     
                 var padreDiv = $(this).parent().parent().attr("class");
 
